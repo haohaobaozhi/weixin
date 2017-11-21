@@ -3,7 +3,7 @@
 #忽略临时文件
 /tmp/*
 #忽略数据库配置
-#/config/database.yml
+/config/database.yml
 !/log/.keep
 !/log/.keep
 *.rbc
