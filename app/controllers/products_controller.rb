@@ -3,6 +3,12 @@ class ProductsController < ApplicationController
 
   # GET /products
   # GET /products.json
+  def weixin
+    @echostr = params[:echostr]
+    
+    render plain: @echostr
+  end
+
   def index
     @products = Product.all
   end
