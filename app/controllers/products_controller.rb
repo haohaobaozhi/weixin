@@ -4,9 +4,21 @@ class ProductsController < ApplicationController
   # GET /products
   # GET /products.json
   def weixin
-    @echostr = params[:echostr]
-    
-    render plain: @echostr
+    if check_weixin_legality(params)
+      @echostr = params[:echostr]
+      render plain: @echostr
+    else
+      render :text => "Forbidden", :status => 403
+    end
+  end
+
+  def check_weixin_legality(params)
+    array = [haohaobaozhi, params[:timestamp], params[:nonce]].sort
+    if params[:signature] != Digest::SHA1.hexdigest(array.join)
+      return false
+    else
+      return true
+    end
   end
 
   def index
