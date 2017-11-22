@@ -13,7 +13,7 @@ class ProductsController < ApplicationController
   end
 
   def check_weixin_legality(params)
-    array = [haohaobaozhi, params[:timestamp], params[:nonce]].sort
+    array = ["haohaobaozhi", params[:timestamp], params[:nonce]].sort
     if params[:signature] != Digest::SHA1.hexdigest(array.join)
       return false
     else
