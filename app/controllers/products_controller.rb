@@ -1,10 +1,10 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
-
+  before_action :check_weixin_legality, only: [:weixin]
   # GET /products
   # GET /products.json
   def weixin
-    if check_weixin_legality(params)
+    if check_weixin_legality
       @echostr = params[:echostr]
       render plain: @echostr
     else
@@ -12,15 +12,11 @@ class ProductsController < ApplicationController
     end
   end
 
-  def check_weixin_legality(params)
-    array = ["haohaobaozhi", params[:timestamp], params[:nonce]].sort
-    if params[:signature] != Digest::SHA1.hexdigest(array.join)
-      return false
-    else
-      return true
-    end
-  end
+  def receive_message
 
+    @message = params[:message]
+    render plain: "大山的回应" +@message
+  end
   def index
     @products = Product.all
   end
@@ -88,5 +84,18 @@ class ProductsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def product_params
       params.require(:product).permit(:title, :description, :image_url, :price)
+    end
+    # 根据参数校验请求是否合法，如果非法返回错误页面
+    # def check_weixin_legality
+    #   array = [Rails.configuration.weixin_token, params[:timestamp], params[:nonce]].sort
+    #   render :text => "Forbidden", :status => 403 if params[:signature] != Digest::SHA1.hexdigest(array.join)
+    # end
+    def check_weixin_legality
+      array = [Rails.configuration.weixin_token, params[:timestamp], params[:nonce]].sort
+      if params[:signature] != Digest::SHA1.hexdigest(array.join)
+        return false
+      else
+        return true
+      end
     end
 end
